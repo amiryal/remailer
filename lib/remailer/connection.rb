@@ -89,7 +89,11 @@ class Remailer::Connection < EventMachine::Connection
   end
   
   def self.establish!(host_name, host_port, options)
-    EventMachine.connect(host_name, host_port, self, options)
+    if host_port == :unix_socket
+      EventMachine.connect(host_name, self, options)
+    else
+      EventMachine.connect(host_name, host_port, self, options)
+    end
 
   rescue EventMachine::ConnectionError => e
     report_exception(e, options)
